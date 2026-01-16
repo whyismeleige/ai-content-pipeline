@@ -1,2 +1,4 @@
 ollama
 piper-tts
+whisper
+moviepy
