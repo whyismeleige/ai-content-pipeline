@@ -1,5 +1,5 @@
 import asyncio
-from services import ScriptGenerator, PiperTTS
+from services import ScriptGenerator, PiperTTS, VideoProcessor, YouTubePublisher
 from datetime import datetime
 
 class ContentPipeline:
@@ -8,7 +8,9 @@ class ContentPipeline:
 
         self.script_gen = ScriptGenerator()
         self.tts = PiperTTS(model_path=model_path, output_dir="output")
+        self.video_processor = VideoProcessor()
 
+        self.youtube = YouTubePublisher("credentials/youtube_token.json")
     async def run(self):
         """ Generate a random script using a random prompt """
         print("Starting daily content generation....")
@@ -33,6 +35,21 @@ class ContentPipeline:
         print("Step 3: Converting to Speech...")
         audio_filename = f"audio_{timestamp}"
         audio_path = self.tts.text_to_speech(script_text, audio_filename)
+
+        print("Step 4: Assembling the Video...")
+        video_path = self.video_processor.create_video(audio_path,f"video_{timestamp}")
+
+        print("Step 5: Publishing...")
+        title = script_text.split('\n')[0][:100]
+
+        try:
+            print("Publishing to YouTube...")
+            yt_id = self.youtube.upload_short(video_path, title, script_text)
+            
+            print(f"\n Success in Publishing!!!")
+            print(f"YouTube Link: https://youtube.com/shorts/{yt_id}")
+        except Exception as e:
+            print(f"Publishing Failed: {e}")
 
         print(f"\n{'='*50}")
         print(" Content Generation complete! ")

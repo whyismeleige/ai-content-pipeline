@@ -6,6 +6,8 @@ __pycache__/
 # --- C extensions ---
 *.so
 
+output/
+
 # --- Distribution / Packaging ---
 .Python
 build/
@@ -77,3 +79,6 @@ venv.bak/
 .env
 config_local.yaml
 secrets.json
+
+# Project Specific 
+backgrounds/
